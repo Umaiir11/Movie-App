@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:tmdb_assignment/app/config/app_assets.dart';
 import 'package:tmdb_assignment/app/config/app_colors.dart';
+import 'package:tmdb_assignment/app/config/app_routes.dart';
 import 'package:tmdb_assignment/app/config/app_text_style.dart';
 import 'package:tmdb_assignment/app/config/padding_extensions.dart';
 import 'package:tmdb_assignment/app/config/sizedbox_extension.dart';
@@ -148,7 +149,14 @@ class _WatchViewState extends State<WatchView> {
                       padding: EdgeInsets.zero,
                       physics: const BouncingScrollPhysics(),
                       itemBuilder: (context, index) {
-                        return _buildSearchTile(imgPath: imagesList[index], title: titles[index], onTap: () {}, category: 'Fantasy')
+                        return _buildSearchTile(
+                              imgPath: imagesList[index],
+                              title: titles[index],
+                              onTap: () {
+                                Get.toNamed(AppRoutes.movieDetailView);
+                              },
+                              category: 'Fantasy',
+                            )
                             .paddingBottom(12.h)
                             .animate(delay: (100 * index).ms)
                             .fadeIn(duration: 500.ms, curve: Curves.easeOut)
@@ -171,7 +179,15 @@ class _WatchViewState extends State<WatchView> {
                               padding: EdgeInsets.zero,
                               physics: const BouncingScrollPhysics(),
                               itemBuilder: (context, index) {
-                                return _buildWatchTile(imgPath: assetList[index], title: assetTitles[index], onTap: () {}, isAsset: true, height: 120.h)
+                                return _buildWatchTile(
+                                      imgPath: assetList[index],
+                                      title: assetTitles[index],
+                                      onTap: () {
+                                        Get.toNamed(AppRoutes.movieDetailView);
+                                      },
+                                      isAsset: true,
+                                      height: 120.h,
+                                    )
                                     // Animate each item with stagger
                                     .animate(delay: (100 * index).ms)
                                     .fadeIn(duration: 500.ms, curve: Curves.easeOut)
@@ -186,7 +202,13 @@ class _WatchViewState extends State<WatchView> {
                               padding: EdgeInsets.zero,
                               physics: const BouncingScrollPhysics(),
                               itemBuilder: (context, index) {
-                                return _buildWatchTile(imgPath: imagesList[index], title: titles[index], onTap: () {})
+                                return _buildWatchTile(
+                                      imgPath: imagesList[index],
+                                      title: titles[index],
+                                      onTap: () {
+                                        Get.toNamed(AppRoutes.movieDetailView);
+                                      },
+                                    )
                                     .paddingBottom(12.h)
                                     // Animate each item with stagger
                                     .animate(delay: (100 * index).ms)

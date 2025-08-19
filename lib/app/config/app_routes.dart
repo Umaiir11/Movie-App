@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:tmdb_assignment/app/mvvm/view/bottom_bar_view/bottom_bar_view.dart';
+import 'package:tmdb_assignment/app/mvvm/view/movie_detail_view/movie_detail_view.dart';
 import 'package:tmdb_assignment/app/mvvm/view_model/bottom_bar_controller/bottom_bar_controller.dart';
 import 'package:tmdb_assignment/app/mvvm/view_model/watch_controller/watch_controler.dart';
 
@@ -11,6 +12,7 @@ abstract class AppRoutes {
 
   static const splashView = '/splashView';
   static const bottomBarView = '/bottomBarView';
+  static const movieDetailView = '/movieDetailView';
 }
 
 abstract class AppPages {
@@ -20,6 +22,13 @@ abstract class AppPages {
     GetPage(
       name: AppRoutes.splashView,
       page: () => SplashView(),
+      binding: BindingsBuilder(() {
+        // Get.lazyPut<SplashController>(() => SplashController());
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.movieDetailView,
+      page: () => MovieDetailView(),
       binding: BindingsBuilder(() {
         // Get.lazyPut<SplashController>(() => SplashController());
       }),
