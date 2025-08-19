@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 abstract class AppColors {
   AppColors._();
 
-  static const Color primary = Color(0xff79F12F);
+  static const Color primary = Color(0xff2E2739);
   static const Color primaryLight = Color(0xffE1FFCB);
   static const Color secondary = Color(0xff0D1D24);
-  static  Color lightBgButtonColor = Color(0xfff5f5f5).withOpacity(0.05);
+  static Color lightBgButtonColor = Color(0xfff5f5f5).withOpacity(0.05);
   static const Color scaffoldBgColor = Color(0xffF3F3F7);
   static const Color white = Color(0xffffffff);
   static const Color black = Color(0xff000000);
@@ -29,5 +29,4 @@ abstract class AppColors {
   static const Color bottomBarGradentCColor = Color(0xFF888A8F);
   static const Color yellowColor = Color(0xFFFDCC01);
   static const Color moreColor = Color(0xFFC4C4C4);
-
 }

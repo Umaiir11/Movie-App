@@ -10,7 +10,7 @@ abstract class AppTextStyles {
   AppTextStyles._();
 
   static TextStyle customText({Color? color, FontWeight fontWeight = FontWeight.normal, double letterSpacing = 0, double fontSize = 12, double? height}) {
-    return GoogleFonts.quicksand(fontSize: fontSize.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, height: height);
+    return GoogleFonts.poppins(fontSize: fontSize.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, height: height);
   }
 
   static textStyleTextBotton({bool? isUnderline = true}) {
@@ -24,11 +24,11 @@ abstract class AppTextStyles {
   }
 
   static TextStyle customText10({Color? color, FontWeight fontWeight = FontWeight.normal, double letterSpacing = 0, double? height}) {
-    return GoogleFonts.quicksand(fontSize: 10.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, height: height);
+    return GoogleFonts.poppins(fontSize: 10.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, height: height);
   }
 
   static TextStyle customText12({Color? color, FontWeight fontWeight = FontWeight.normal, double letterSpacing = 0, double? height}) {
-    return GoogleFonts.quicksand(fontSize: 12.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, height: height);
+    return GoogleFonts.poppins(fontSize: 12.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, height: height);
   }
 
   static TextStyle customText14({
@@ -39,7 +39,7 @@ abstract class AppTextStyles {
     TextDecoration decoration = TextDecoration.none,
     Color? decorationColor,
   }) {
-    return GoogleFonts.quicksand(height: height, fontSize: 14.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, decoration: decoration);
+    return GoogleFonts.poppins(height: height, fontSize: 14.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, decoration: decoration);
   }
 
   static TextStyle customText16({
@@ -49,7 +49,7 @@ abstract class AppTextStyles {
     TextDecoration decoration = TextDecoration.none,
     Color? decorationColor,
   }) {
-    return GoogleFonts.quicksand(
+    return GoogleFonts.poppins(
       fontSize: 16.sp,
       fontWeight: fontWeight,
       color: color,
@@ -68,7 +68,7 @@ abstract class AppTextStyles {
     TextDecoration decoration = TextDecoration.none,
     double? height,
   }) {
-    return GoogleFonts.quicksand(
+    return GoogleFonts.poppins(
       fontSize: 32.sp,
       fontWeight: fontWeight,
       color: color,
@@ -88,7 +88,7 @@ abstract class AppTextStyles {
     TextDecoration decoration = TextDecoration.none,
     double? height,
   }) {
-    return GoogleFonts.quicksand(
+    return GoogleFonts.poppins(
       fontSize: 40.sp,
       fontWeight: fontWeight,
       color: color,
@@ -100,26 +100,26 @@ abstract class AppTextStyles {
   }
 
   static TextStyle customText18({Color? color, double? height = 1, FontWeight fontWeight = FontWeight.normal, double letterSpacing = 0}) {
-    return GoogleFonts.quicksand(height: height, fontSize: 18.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing);
+    return GoogleFonts.poppins(height: height, fontSize: 18.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing);
   }
 
   static TextStyle customText20({List<Shadow>? shadow, Color? color, double? height = 1, FontWeight fontWeight = FontWeight.normal, double letterSpacing = 0}) {
-    return GoogleFonts.quicksand(height: height, fontSize: 18.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, shadows: shadow);
+    return GoogleFonts.poppins(height: height, fontSize: 18.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, shadows: shadow);
   }
 
   static TextStyle customText22({List<Shadow>? shadow, Color? color, FontWeight fontWeight = FontWeight.normal, double letterSpacing = 0, double? height}) {
-    return GoogleFonts.quicksand(fontSize: 22.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, height: height, shadows: shadow);
+    return GoogleFonts.poppins(fontSize: 22.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, height: height, shadows: shadow);
   }
 
   static TextStyle customText24({List<Shadow>? shadow, Color? color, FontWeight fontWeight = FontWeight.normal, double letterSpacing = 0}) {
-    return GoogleFonts.quicksand(fontSize: 24.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, shadows: shadow);
+    return GoogleFonts.poppins(fontSize: 24.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, shadows: shadow);
   }
 
   static TextStyle customText26({List<Shadow>? shadow, double? height, Color? color, FontWeight fontWeight = FontWeight.normal, double letterSpacing = 0}) {
-    return GoogleFonts.quicksand(fontSize: 26.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, shadows: shadow, height: height);
+    return GoogleFonts.poppins(fontSize: 26.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, shadows: shadow, height: height);
   }
 
   static TextStyle customText28({List<Shadow>? shadow, Color? color, FontWeight fontWeight = FontWeight.normal, double letterSpacing = 0, double? height}) {
-    return GoogleFonts.quicksand(fontSize: 28.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, shadows: shadow, height: height);
+    return GoogleFonts.poppins(fontSize: 28.sp, fontWeight: fontWeight, color: color, letterSpacing: letterSpacing, shadows: shadow, height: height);
   }
 }

@@ -41,7 +41,6 @@ class CustomCachedImage extends StatelessWidget {
   }
 }
 
-
 class _NotFoundWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -49,7 +48,7 @@ class _NotFoundWidget extends StatelessWidget {
       child: Container(
         height: double.infinity,
         decoration: BoxDecoration(color: AppColors.textLightBlack.withOpacity(0.2)),
-        child: Image.asset(AppAssets.placeholderNinja, height: 40.h, color: Color(0xffE1FFCB)).paddingHorizontal(10.w),
+        child: Icon(Icons.info_outlined, size: 40.h, color: Color(0xffE1FFCB)).paddingHorizontal(10.w),
       ),
     );
   }
@@ -133,7 +132,12 @@ class _InitialsFallback extends StatelessWidget {
       width: size,
       height: size,
       color: bgColor,
-      child: Center(child: Text(_getInitials(name), style: TextStyle(fontSize: size * 0.4, fontWeight: FontWeight.bold, color: textColor))),
+      child: Center(
+        child: Text(
+          _getInitials(name),
+          style: TextStyle(fontSize: size * 0.4, fontWeight: FontWeight.bold, color: textColor),
+        ),
+      ),
     );
   }
 }
