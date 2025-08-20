@@ -21,15 +21,11 @@ class ApiResponse<T> {
       return ApiResponse();
     }
 
-    // Determine success status
     final status = json['status'];
     final success = json['success'];
     final isSuccess = success == true || status == 'success';
 
-    // By default, use the entire JSON as the data source
     dynamic extractedData = json;
-
-    // Parse the extracted data using fromJsonT
     T? parsedData;
     if (extractedData != null && fromJsonT != null) {
       try {

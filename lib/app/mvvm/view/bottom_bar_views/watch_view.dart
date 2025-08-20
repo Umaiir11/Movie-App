@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -205,27 +206,35 @@ class _WatchViewState extends State<WatchView> {
                             ).paddingHorizontal(15.w),
                           )
                         : Expanded(
-                            child: ListView.builder(
-                              itemCount: imagesList.length,
-                              padding: EdgeInsets.zero,
-                              physics: const BouncingScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return _buildWatchTile(
-                                      imgPath: imagesList[index],
-                                      title: titles[index],
-                                      onTap: () {
-                                        Get.toNamed(AppRoutes.movieDetailView);
-                                      },
-                                    )
-                                    .paddingBottom(12.h)
-                                    // Animate each item with stagger
-                                    .animate(delay: (100 * index).ms)
-                                    .fadeIn(duration: 500.ms, curve: Curves.easeOut)
-                                    .slideY(begin: 0.2, end: 0, duration: 500.ms, curve: Curves.easeOut)
-                                    .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1), duration: 500.ms, curve: Curves.easeOut);
+                      child: Obx(() {
+                        return _watchController.isUpcomingMoviesLoading.value
+                            ? const Center(child: CupertinoActivityIndicator())
+                            : ListView.builder(
+                          itemCount: _watchController.upcomingMovies.length,
+                          padding: EdgeInsets.zero,
+                          physics: const BouncingScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final movie = _watchController.upcomingMovies[index];
+                            return _buildWatchTile(
+                              imgPath: movie.posterFullUrl,
+                              title: movie.title ?? 'Unknown Title',
+                              onTap: () {
+                                Get.toNamed(AppRoutes.movieDetailView, arguments: movie);
                               },
-                            ).paddingHorizontal(15.w),
-                          );
+                            )
+                                .paddingBottom(12.h)
+                                .animate(delay: (100 * index).ms)
+                                .fadeIn(duration: 500.ms, curve: Curves.easeOut)
+                                .slideY(begin: 0.2, end: 0, duration: 500.ms, curve: Curves.easeOut)
+                                .scale(
+                                begin: const Offset(0.95, 0.95),
+                                end: const Offset(1, 1),
+                                duration: 500.ms,
+                                curve: Curves.easeOut);
+                          },
+                        ).paddingHorizontal(15.w);
+                      }),
+                    );
                   });
           }),
         ],
