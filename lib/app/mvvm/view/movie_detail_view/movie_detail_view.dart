@@ -305,6 +305,11 @@ class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
         Get.back();
       }
     });
+
+    // ✅ Force fullscreen as soon as screen opens
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _controller.toggleFullScreenMode();
+    });
   }
 
   @override
@@ -315,41 +320,52 @@ class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          Center(
-            child: YoutubePlayer(
-              controller: _controller,
-              showVideoProgressIndicator: true,
-              progressIndicatorColor: Colors.lightBlue,
-              progressColors: const ProgressBarColors(
-                playedColor: Colors.lightBlue,
-                handleColor: Colors.lightBlueAccent,
-              ),
-              onReady: () {
-                _controller.play();
-              },
-            ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 10.h,
-            left: 16.w,
-            child: ElevatedButton(
-              onPressed: () => Get.back(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black.withOpacity(0.7),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.sp)),
-              ),
-              child: Text(
-                'Done',
-                style: AppTextStyles.customText16(color: Colors.white),
-              ),
-            ),
-          ),
-        ],
+    return YoutubePlayerBuilder(
+      player: YoutubePlayer(
+        controller: _controller,
+        showVideoProgressIndicator: true,
+        progressIndicatorColor: Colors.lightBlue,
+        progressColors: const ProgressBarColors(
+          playedColor: Colors.lightBlue,
+          handleColor: Colors.lightBlueAccent,
+        ),
       ),
+      builder: (context, player) {
+        return Scaffold(
+          backgroundColor: Colors.black,
+          body: Stack(
+            children: [
+              Center(child: player),
+
+              // ✅ Custom Done button (works in both normal + fullscreen)
+              Positioned(
+                top: MediaQuery.of(context).padding.top + 10,
+                left: 16,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_controller.value.isFullScreen) {
+                      _controller.toggleFullScreenMode(); // exit fullscreen first
+                    }
+                    Get.back(); // then close screen
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black.withOpacity(0.7),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Done',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
+
+
