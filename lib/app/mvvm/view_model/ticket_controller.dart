@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 
 class TheaterController extends GetxController {
   static double get seatSize => 32.w;
+
   static double get seatGap => 6.w;
 
   final RxInt seatsPerRow = 12.obs;
@@ -27,7 +28,8 @@ class TheaterController extends GetxController {
     if (selectedSeatNames.contains(seatName)) {
       selectedSeatNames.remove(seatName);
     } else {
-      if (selectedSeatNames.length < 8) { // Limit selection to 8 seats
+      if (selectedSeatNames.length < 8) {
+        // Limit selection to 8 seats
         selectedSeatNames.add(seatName);
       } else {
         Get.snackbar(
@@ -60,14 +62,20 @@ class TheaterController extends GetxController {
       Get.dialog(
         AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-          title: Text('Booking Confirmed!', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold)),
+          title: Text(
+            'Booking Confirmed!',
+            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Seats: ${selectedSeatNames.join(", ")}', style: TextStyle(fontSize: 16.sp)),
               SizedBox(height: 8.h),
-              Text('Total: ₹${totalAmount.toStringAsFixed(0)}', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+              Text(
+                'Total: ₹${totalAmount.toStringAsFixed(0)}',
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+              ),
             ],
           ),
           actions: [

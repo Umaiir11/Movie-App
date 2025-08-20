@@ -2,10 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
+import 'package:tmdb_assignment/app/config/app_assets.dart';
+import 'package:tmdb_assignment/app/config/padding_extensions.dart';
+import 'package:tmdb_assignment/app/config/sizedbox_extension.dart';
+import '../../config/app_colors.dart';
+import '../../config/app_text_style.dart';
 import '../view_model/ticket_controller.dart';
-
-// Enhanced TheaterController
 
 class TheaterScreen extends StatelessWidget {
   const TheaterScreen({super.key});
@@ -15,185 +17,46 @@ class TheaterScreen extends StatelessWidget {
     final controller = Get.put(TheaterController());
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F0F23),
-      body: SafeArea(
-        child: Column(
+      backgroundColor: Colors.grey[100],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black, size: 20.sp),
+          onPressed: controller.goBack,
+        ),
+        title: Column(
           children: [
-            // Header Section
-            _buildHeader(controller),
-
-            // Scrollable content
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // Movie Info Card
-                    _buildMovieInfoCard(controller),
-
-                    SizedBox(height: 16.h),
-
-                    // Screen
-                    _buildScreen(controller),
-
-                    SizedBox(height: 20.h),
-
-                    // Seats Area
-                    _buildSeatsArea(controller),
-
-                    SizedBox(height: 16.h),
-
-                    // Legend
-                    _buildLegend(),
-
-                    SizedBox(height: 16.h),
-
-                    // Selected Seats and Total
-                    _buildBookingSummary(controller),
-
-                    SizedBox(height: 100.h), // Space for bottom button
-                  ],
-                ),
-              ),
+            Text(
+              "The King's Man",
+              style: AppTextStyles.customText18(fontWeight: FontWeight.w600, color: Colors.black),
             ),
+            2.h.verticalSpace,
+            Text("March 5, 2021  |  12:30 Hall 1", style: AppTextStyles.customText14(color: Colors.blue)),
           ],
         ),
+        centerTitle: true,
       ),
-      // Fixed bottom button
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.all(20.w),
-        decoration: BoxDecoration(
-          color: Color(0xFF0F0F23),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 10,
-              offset: Offset(0, -2),
-            ),
-          ],
-        ),
-        child: _buildPurchaseButton(controller),
-      ),
-    );
-  }
-
-  Widget _buildHeader(TheaterController controller) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-      child: Row(
+      body: Column(
         children: [
-          IconButton(
-            icon: Icon(Icons.arrow_back_ios, color: Colors.white, size: 24.sp),
-            onPressed: controller.goBack,
-          ),
           Expanded(
-            child: Text(
-              'Select Seats',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  20.h.verticalSpace,
+                  _buildScreen(controller),
+                  30.h.verticalSpace,
+                  _buildSeatsArea(controller),
+                  30.h.verticalSpace,
+                  _buildLegend(),
+                  20.h.verticalSpace,
+                  _buildSelectedSeatsInfo(controller),
+                  20.h.verticalSpace,
+                ],
               ),
             ),
           ),
-          SizedBox(width: 48.w), // Balance the back button
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMovieInfoCard(TheaterController controller) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFF1E1E3F), Color(0xFF2D2D5F)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Obx(() => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 4.w,
-                height: 24.h,
-                decoration: BoxDecoration(
-                  color: Color(0xFFFF6B6B),
-                  borderRadius: BorderRadius.circular(2.r),
-                ),
-              ),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      controller.movieTitle.value,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      controller.cinemaName.value,
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14.sp,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16.h),
-          Row(
-            children: [
-              _buildInfoChip(Icons.access_time, controller.showTime.value),
-              SizedBox(width: 12.w),
-              _buildInfoChip(Icons.calendar_today, controller.showDate.value),
-              SizedBox(width: 12.w),
-              _buildInfoChip(Icons.movie, controller.hallName.value),
-            ],
-          ),
-        ],
-      )),
-    );
-  }
-
-  Widget _buildInfoChip(IconData icon, String text) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14.sp, color: Color(0xFFFF6B6B)),
-          SizedBox(width: 4.w),
-          Text(
-            text,
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 12.sp,
-            ),
-          ),
+          _buildBottomSection(controller),
         ],
       ),
     );
@@ -201,7 +64,7 @@ class TheaterScreen extends StatelessWidget {
 
   Widget _buildScreen(TheaterController controller) {
     return Obx(() {
-      final minScreenWidth = 1.sw - 40.w;
+      final minScreenWidth = 1.sw - 60.w;
       var screenWidth = controller.getMaxScreenWidth(controller.seatsPerRow.value);
       screenWidth = max(screenWidth, minScreenWidth * 0.8);
 
@@ -209,124 +72,101 @@ class TheaterScreen extends StatelessWidget {
         children: [
           Container(
             width: screenWidth,
-            height: 8.h,
+            height: 35.h,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.transparent,
-                  Color(0xFFFF6B6B).withOpacity(0.6),
-                  Color(0xFFFF6B6B),
-                  Color(0xFFFF6B6B).withOpacity(0.6),
-                  Colors.transparent,
-                ],
-              ),
-              borderRadius: BorderRadius.circular(4.r),
+              color: Colors.white,
+              borderRadius: BorderRadius.only(topLeft: Radius.circular(100.r), topRight: Radius.circular(100.r)),
+              border: Border.all(color: Colors.blue.withOpacity(0.3), width: 2),
             ),
-          ),
-          SizedBox(height: 8.h),
-          Text(
-            'SCREEN',
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 2,
+            child: Center(
+              child: Text(
+                'SCREEN',
+                style: AppTextStyles.customText12(color: Colors.grey[600], letterSpacing: 3, fontWeight: FontWeight.w500),
+              ),
             ),
           ),
         ],
-      );
+      ).paddingHorizontal(15.w);
     });
   }
 
   Widget _buildSeatsArea(TheaterController controller) {
-    return SizedBox(
-      height: 380.h, // Fixed height to prevent overflow
+    return Container(
+      padding: EdgeInsets.all(20.w),
+      margin: EdgeInsets.symmetric(horizontal: 20.w),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(color: Colors.blue.withOpacity(0.3), width: 2),
+      ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Obx(() => Column(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(controller.numOfRows.value, (rowIdx) {
-              String rowLetter = String.fromCharCode(65 + rowIdx);
-              return Padding(
-                padding: EdgeInsets.symmetric(vertical: 2.h),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Row label
-                    Container(
-                      width: 20.w,
-                      alignment: Alignment.center,
-                      child: Text(
-                        rowLetter,
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+        child: Obx(
+              () =>
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(controller.numOfRows.value, (rowIdx) {
+                  String rowLetter = String.fromCharCode(65 + rowIdx);
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4.h),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _rowLabel(rowLetter),
+                        8.w.horizontalSpace,
+                        ...List.generate(controller.seatsPerRow.value, (seatIdx) {
+                          String seatName = "$rowLetter${seatIdx + 1}";
+                          return _buildSeat(controller, seatName);
+                        }),
+                        8.w.horizontalSpace,
+                        _rowLabel(rowLetter),
+                      ],
                     ),
-                    SizedBox(width: 6.w),
-
-                    // Seats
-                    ...List.generate(controller.seatsPerRow.value, (seatIdx) {
-                      String seatName = "$rowLetter${seatIdx + 1}";
-                      return _buildSeat(controller, seatName, seatIdx);
-                    }),
-
-                    SizedBox(width: 6.w),
-
-                    // Row label (right side)
-                    Container(
-                      width: 20.w,
-                      alignment: Alignment.center,
-                      child: Text(
-                        rowLetter,
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }),
-          )),
+                  );
+                }),
+              ),
         ),
       ),
     );
   }
 
-  Widget _buildSeat(TheaterController controller, String seatName, int seatIdx) {
+  Widget _rowLabel(String rowLetter) {
+    return Container(
+      width: 20.w,
+      alignment: Alignment.center,
+      child: Text(
+        rowLetter,
+        style: AppTextStyles.customText12(color: Colors.grey[600], fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
+  Widget _buildSeat(TheaterController controller, String seatName) {
     return Obx(() {
       if (controller.missing.contains(seatName)) {
-        return SizedBox(
-          width: TheaterController.seatSize + TheaterController.seatGap,
-          height: TheaterController.seatSize,
-        );
+        return SizedBox(width: TheaterController.seatSize + TheaterController.seatGap, height: TheaterController.seatSize);
       }
 
-      Color seatColor = Color(0xFF4ECDC4); // Available
+      Color seatColor = Colors.grey[300]!; // Available (light grey)
       Color borderColor = Colors.transparent;
       IconData? seatIcon;
 
       if (controller.blocked.contains(seatName)) {
-        seatColor = Color(0xFF6B6B83);
+        seatColor = Colors.grey[400]!; // Not available (darker grey)
         seatIcon = Icons.close;
       } else if (controller.bookedSeats.contains(seatName)) {
-        seatColor = Color(0xFFFF6B6B);
+        seatColor = Colors.grey[400]!; // Not available (darker grey)
       } else if (controller.selectedSeatNames.contains(seatName)) {
-        seatColor = Color(0xFFFFD93D);
-        borderColor = Colors.white;
+        seatColor = Colors.orange; // Selected (orange/yellow)
+        borderColor = Colors.orange;
+      } else {
+        // Available seats - light blue
+        seatColor = Colors.lightBlue[100]!;
       }
 
       return GestureDetector(
         onTap: () {
-          if (!controller.blocked.contains(seatName) &&
-              !controller.bookedSeats.contains(seatName)) {
+          if (!controller.blocked.contains(seatName) && !controller.bookedSeats.contains(seatName)) {
             controller.toggleSeat(seatName);
           }
         },
@@ -336,17 +176,10 @@ class TheaterScreen extends StatelessWidget {
           height: TheaterController.seatSize,
           decoration: BoxDecoration(
             color: seatColor,
-            borderRadius: BorderRadius.circular(8.r),
-            border: borderColor != Colors.transparent
-                ? Border.all(color: borderColor, width: 2)
-                : null,
-            boxShadow: controller.selectedSeatNames.contains(seatName)
-                ? [BoxShadow(color: Color(0xFFFFD93D).withOpacity(0.5), blurRadius: 8)]
-                : null,
+            borderRadius: BorderRadius.circular(6.r),
+            border: borderColor != Colors.transparent ? Border.all(color: borderColor, width: 2) : null,
           ),
-          child: seatIcon != null
-              ? Icon(seatIcon, size: 16.sp, color: Colors.white)
-              : null,
+          child: seatIcon != null ? Icon(seatIcon, size: 12.sp, color: Colors.white) : null,
         ),
       );
     });
@@ -354,114 +187,56 @@ class TheaterScreen extends StatelessWidget {
 
   Widget _buildLegend() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildLegendItem(Color(0xFF4ECDC4), "Available"),
-          _buildLegendItem(Color(0xFFFFD93D), "Selected"),
-          _buildLegendItem(Color(0xFFFF6B6B), "Booked"),
-          _buildLegendItem(Color(0xFF6B6B83), "Blocked"),
+          _legendItem(Colors.orange, "Selected"),
+          _legendItem(Colors.grey[400]!, "Not available"),
+          _legendItem(Colors.grey[600]!, "VIP (150₹)"),
+          _legendItem(Colors.lightBlue[100]!, "Regular (50₹)"),
         ],
       ),
     );
   }
 
-  Widget _buildLegendItem(Color color, String label) {
+  Widget _legendItem(Color color, String label) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 16.w,
-          height: 16.w,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(4.r),
-          ),
-        ),
-        SizedBox(width: 6.w),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 12.sp,
-          ),
-        ),
+        Image.asset(AppAssets.seatIcon, height: 15.h, color: color,),
+        6.w.horizontalSpace,
+        Text(label, style: AppTextStyles.customText12(color: Colors.grey[600])),
       ],
     );
   }
 
-  Widget _buildBookingSummary(TheaterController controller) {
+  Widget _buildSelectedSeatsInfo(TheaterController controller) {
     return Obx(() {
-      if (controller.selectedSeatNames.isEmpty) {
-        return SizedBox.shrink();
-      }
+      if (controller.selectedSeatNames.isEmpty) return const SizedBox.shrink();
 
       return Container(
         margin: EdgeInsets.symmetric(horizontal: 20.w),
-        padding: EdgeInsets.all(16.w),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         decoration: BoxDecoration(
-          color: Color(0xFF1E1E3F),
-          borderRadius: BorderRadius.circular(12.r),
-          border: Border.all(color: Color(0xFFFFD93D).withOpacity(0.3)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.r),
+          border: Border.all(color: Colors.grey[300]!),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            Row(
-              children: [
-                Text(
-                  'Selected Seats: ',
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14.sp,
-                  ),
-                ),
-                Expanded(
-                  child: Wrap(
-                    spacing: 8.w,
-                    children: controller.selectedSeatNames.map((seat) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                        decoration: BoxDecoration(
-                          color: Color(0xFFFFD93D).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(6.r),
-                          border: Border.all(color: Color(0xFFFFD93D), width: 1),
-                        ),
-                        child: Text(
-                          seat,
-                          style: TextStyle(
-                            color: Color(0xFFFFD93D),
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
+            Text(
+              '${controller.selectedSeatNames.length}',
+              style: AppTextStyles.customText16(fontWeight: FontWeight.w600, color: Colors.black),
             ),
-            SizedBox(height: 12.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${controller.selectedSeatNames.length} × ₹${controller.ticketPrice.value.toStringAsFixed(0)}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16.sp,
-                  ),
-                ),
-                Text(
-                  '₹${controller.totalAmount.toStringAsFixed(0)}',
-                  style: TextStyle(
-                    color: Color(0xFFFFD93D),
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            4.w.horizontalSpace,
+            Text('/ 3 row', style: AppTextStyles.customText14(color: Colors.grey[600])),
+            Spacer(),
+            GestureDetector(
+              onTap: () {
+                // Clear selection logic if needed
+              },
+              child: Icon(Icons.close, size: 20.sp, color: Colors.grey[600]),
             ),
           ],
         ),
@@ -469,34 +244,53 @@ class TheaterScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildPurchaseButton(TheaterController controller) {
-    return Obx(() => Container(
-      width: 1.sw - 40.w,
-      height: 56.h,
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
-      child: ElevatedButton(
-        onPressed: controller.proceedToPayment,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: controller.selectedSeatNames.isNotEmpty
-              ? Color(0xFFFF6B6B)
-              : Colors.grey.shade700,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16.r),
+  Widget _buildBottomSection(TheaterController controller) {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.all(20.w),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Total Price Row
+          Obx(
+                () =>
+                Row(
+                  children: [
+                    Text('Total Price', style: AppTextStyles.customText14(color: Colors.grey[600])),
+                    Spacer(),
+                    Text(
+                      controller.selectedSeatNames.isNotEmpty ? '\$ ${controller.totalAmount.toStringAsFixed(0)}' : '\$ 0',
+                      style: AppTextStyles.customText20(fontWeight: FontWeight.w600, color: Colors.black),
+                    ),
+                  ],
+                ),
           ),
-          elevation: controller.selectedSeatNames.isNotEmpty ? 8 : 0,
-          shadowColor: Color(0xFFFF6B6B).withOpacity(0.5),
-        ),
-        child: Text(
-          controller.selectedSeatNames.isNotEmpty
-              ? 'Pay ₹${controller.totalAmount.toStringAsFixed(0)}'
-              : 'Select Seats',
-          style: TextStyle(
-            fontSize: 18.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+          20.h.verticalSpace,
+          // Proceed Button
+          Obx(
+                () =>
+                SizedBox(
+                  width: double.infinity,
+                  height: 50.h,
+                  child: ElevatedButton(
+                    onPressed: controller.selectedSeatNames.isNotEmpty ? controller.proceedToPayment : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: controller.selectedSeatNames.isNotEmpty ? Colors.lightBlue : Colors.grey[300],
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      'Proceed to pay',
+                      style: AppTextStyles.customText16(
+                        fontWeight: FontWeight.w600,
+                        color: controller.selectedSeatNames.isNotEmpty ? Colors.white : Colors.grey[600],
+                      ),
+                    ),
+                  ),
+                ),
           ),
-        ),
+        ],
       ),
-    ));
+    );
   }
 }

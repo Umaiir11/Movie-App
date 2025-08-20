@@ -22,6 +22,7 @@ class AppAssets {
   static const String horrorImg = '$imagesPath/horror_img.png';
   static const String scifiImg = '$imagesPath/scifi_img.png';
   static const String thrillerImg = '$imagesPath/thriller_img.png';
+  static const String seatIcon = '$imagesPath/seat_icon.png';
 
   // Svgs Path
   static const String splashLogo = '$svgsPath/splash-logo.svg';

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:tmdb_assignment/app/config/app_routes.dart';
 import 'package:tmdb_assignment/app/config/padding_extensions.dart';
 import 'package:tmdb_assignment/app/config/sizedbox_extension.dart';
 import 'package:tmdb_assignment/app/customWidgets/custom_cache_image/custom_cached_image.dart';
@@ -37,7 +38,9 @@ class _MovieDetailViewState extends State<MovieDetailView> {
       backgroundColor: AppColors.white,
       body: Obx(() {
         if (_movieDetailsController.isMovieDetailsLoading.value) {
-          return  Center(child:  CupertinoActivityIndicator(color: Colors.black, radius: 15.sp),);
+          return Center(
+            child: CupertinoActivityIndicator(color: Colors.black, radius: 15.sp),
+          );
         }
         final movie = _movieDetailsController.movieDetails.value;
         if (movie == null) {
@@ -46,11 +49,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeroSection(movie),
-              _buildGenreSection(movie),
-              _buildOverviewSection(movie),
-            ],
+            children: [_buildHeroSection(movie), _buildGenreSection(movie), _buildOverviewSection(movie)],
           ),
         );
       }),
@@ -69,8 +68,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
             imageUrl: movie.backdropFullUrl,
             borderRadius: 0.sp,
             fit: BoxFit.cover,
-
-                         ).animate().fadeIn(duration: 800.ms).scale(begin: const Offset(1.1, 1.1), end: const Offset(1.0, 1.0)),
+          ).animate().fadeIn(duration: 800.ms).scale(begin: const Offset(1.1, 1.1), end: const Offset(1.0, 1.0)),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -81,10 +79,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: _buildActionButtons(movie),
-          ).paddingBottom(20.h),
+          Align(alignment: Alignment.bottomCenter, child: _buildActionButtons(movie)).paddingBottom(20.h),
           Positioned(
             top: MediaQuery.of(context).padding.top + 10.h,
             left: 16.w,
@@ -93,13 +88,10 @@ class _MovieDetailViewState extends State<MovieDetailView> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                GestureDetector(
-                  onTap: () => Get.back(),
-                  child: _circleButton(Icons.arrow_back_ios_new_rounded),
-                ),
+                GestureDetector(onTap: () => Get.back(), child: _circleButton(Icons.arrow_back_ios_new_rounded)),
                 10.w.width,
                 Text(
-                  movie.title ?? 'Watch',
+                  'Watch',
                   style: AppTextStyles.customText18(color: Colors.white, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -127,6 +119,12 @@ class _MovieDetailViewState extends State<MovieDetailView> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
+            '${movie.title}',
+            textAlign: TextAlign.center,
+            style: AppTextStyles.customText22(color: Colors.white, fontWeight: FontWeight.w500),
+          ),
+          10.h.height,
+          Text(
             'In Theaters ${movie.releaseDate ?? 'Unknown Date'}',
             style: AppTextStyles.customText18(color: Colors.white, fontWeight: FontWeight.w500),
           ),
@@ -138,7 +136,9 @@ class _MovieDetailViewState extends State<MovieDetailView> {
                 width: 250.w,
                 height: 50.h,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Get.toNamed(AppRoutes.ticketView, arguments: {'name': movie.title});
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.lightBlue,
                     foregroundColor: AppColors.white,
@@ -165,7 +165,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
                     Get.dialog(
                       Dialog(
                         backgroundColor: Colors.black54,
-                        child:   CupertinoActivityIndicator(color: Colors.white, radius: 15.sp),
+                        child: CupertinoActivityIndicator(color: Colors.white, radius: 15.sp),
                       ),
                       barrierDismissible: false,
                     );
@@ -173,7 +173,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
                       await _movieDetailsController.fetchMovieTrailer(movieId ?? 0);
                       Get.back();
                       if (_movieDetailsController.yTLink?.isNotEmpty ?? false) {
-                        Get.to(() => _VideoPlayerScreen(youtubeUrl: _movieDetailsController.yTLink?? ""));
+                        Get.to(() => _VideoPlayerScreen(youtubeUrl: _movieDetailsController.yTLink ?? ""));
                       } else {
                         Get.snackbar('Error', 'No trailer available', snackPosition: SnackPosition.BOTTOM);
                       }
@@ -215,11 +215,12 @@ class _MovieDetailViewState extends State<MovieDetailView> {
           Wrap(
             spacing: 8.w,
             runSpacing: 8.h,
-            children: movie.genres?.asMap().entries.map((entry) {
-              final index = entry.key;
-              final genre = entry.value;
-              return _buildGenreChip(genre.name ?? 'Unknown', _getGenreColor(index), index);
-            }).toList() ??
+            children:
+                movie.genres?.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final genre = entry.value;
+                  return _buildGenreChip(genre.name ?? 'Unknown', _getGenreColor(index), index);
+                }).toList() ??
                 [],
           ),
         ],
@@ -228,14 +229,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
   }
 
   Color _getGenreColor(int index) {
-    final colors = [
-      Colors.teal,
-      Colors.pinkAccent,
-      Colors.deepPurple,
-      CupertinoColors.systemYellow,
-      Colors.blue,
-      Colors.orange,
-    ];
+    final colors = [Colors.teal, Colors.pinkAccent, Colors.deepPurple, CupertinoColors.systemYellow, Colors.blue, Colors.orange];
     return colors[index % colors.length];
   }
 
@@ -289,19 +283,15 @@ class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
   void initState() {
     super.initState();
     final videoId = YoutubePlayer.convertUrlToId(widget.youtubeUrl) ?? '';
-    _controller = YoutubePlayerController(
-      initialVideoId: videoId,
-      flags: const YoutubePlayerFlags(
-        autoPlay: true,
-        mute: false,
-        enableCaption: true,
-        captionLanguage: 'en',
-      ),
-    )..addListener(() {
-      if (_controller.value.playerState == PlayerState.ended) {
-        Get.back();
-      }
-    });
+    _controller =
+        YoutubePlayerController(
+          initialVideoId: videoId,
+          flags: const YoutubePlayerFlags(autoPlay: true, mute: false, enableCaption: true, captionLanguage: 'en'),
+        )..addListener(() {
+          if (_controller.value.playerState == PlayerState.ended) {
+            Get.back();
+          }
+        });
 
     Future.delayed(const Duration(milliseconds: 100), () {
       _controller.toggleFullScreenMode();
@@ -321,10 +311,7 @@ class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
         controller: _controller,
         showVideoProgressIndicator: true,
         progressIndicatorColor: Colors.lightBlue,
-        progressColors: const ProgressBarColors(
-          playedColor: Colors.lightBlue,
-          handleColor: Colors.lightBlueAccent,
-        ),
+        progressColors: const ProgressBarColors(playedColor: Colors.lightBlue, handleColor: Colors.lightBlueAccent),
       ),
       builder: (context, player) {
         return Scaffold(
@@ -345,14 +332,9 @@ class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black.withOpacity(0.7),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
-                  child: const Text(
-                    'Done',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
-                  ),
+                  child: const Text('Done', style: TextStyle(color: Colors.white, fontSize: 16)),
                 ),
               ),
             ],
@@ -362,5 +344,3 @@ class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
     );
   }
 }
-
-

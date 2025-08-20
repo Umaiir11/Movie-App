@@ -226,12 +226,7 @@ class _WatchViewState extends State<WatchView> {
                                             .paddingBottom(12.h)
                                             .animate(delay: (40 * index).ms, onPlay: (controller) => controller.forward())
                                             .slideY(begin: 0.4, end: 0, duration: 200.ms, curve: Curves.easeOutBack)
-                                            .scale(
-                                              begin: const Offset(0.85, 0.85),
-                                              end: const Offset(1, 1),
-                                              duration: 200.ms,
-                                              curve: Curves.bounceOut,
-                                            )
+                                            .scale(begin: const Offset(0.85, 0.85), end: const Offset(1, 1), duration: 200.ms, curve: Curves.bounceOut)
                                             .rotate(begin: 0.08, end: 0, duration: 200.ms, curve: Curves.easeOutBack);
                                       },
                                     ).paddingHorizontal(15.w);
@@ -255,15 +250,18 @@ class _WatchViewState extends State<WatchView> {
           Positioned(
             bottom: 15.h,
             left: 10.w,
-            child:
-                Text(
-                      title,
-                      style: AppTextStyles.customText18(color: Colors.white, fontWeight: FontWeight.w500),
-                    )
-                    // Animate the text separately with a little slide up
-                    .animate()
-                    .fadeIn(duration: 600.ms)
-                    .slideY(begin: 0.2, end: 0, duration: 600.ms, curve: Curves.easeOut),
+            child: SizedBox(
+              width: 200.w,
+              child:
+                  Text(
+                        title,
+                        style: AppTextStyles.customText18(color: Colors.white, fontWeight: FontWeight.w500),
+                      )
+                      // Animate the text separately with a little slide up
+                      .animate()
+                      .fadeIn(duration: 600.ms)
+                      .slideY(begin: 0.2, end: 0, duration: 600.ms, curve: Curves.easeOut),
+            ),
           ),
         ],
       ),

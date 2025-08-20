@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
 import 'package:tmdb_assignment/app/mvvm/view/bottom_bar_view/bottom_bar_view.dart';
 import 'package:tmdb_assignment/app/mvvm/view/movie_detail_view/movie_detail_view.dart';
+import 'package:tmdb_assignment/app/mvvm/view/ticket_view.dart';
 import 'package:tmdb_assignment/app/mvvm/view_model/bottom_bar_controller/bottom_bar_controller.dart';
+import 'package:tmdb_assignment/app/mvvm/view_model/ticket_controller.dart';
 import 'package:tmdb_assignment/app/mvvm/view_model/watch_controller/watch_controler.dart';
 
 import '../mvvm/view/splash_view/splash_view.dart';
@@ -14,6 +16,7 @@ abstract class AppRoutes {
   static const splashView = '/splashView';
   static const bottomBarView = '/bottomBarView';
   static const movieDetailView = '/movieDetailView';
+  static const ticketView = '/ticketView';
 }
 
 abstract class AppPages {
@@ -25,6 +28,13 @@ abstract class AppPages {
       page: () => SplashView(),
       binding: BindingsBuilder(() {
         // Get.lazyPut<SplashController>(() => SplashController());
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.ticketView,
+      page: () => TheaterScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<TheaterController>(() => TheaterController());
       }),
     ),
     GetPage(
