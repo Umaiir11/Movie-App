@@ -3,8 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'config/app_colors.dart';
 import 'config/app_routes.dart';
 import 'package:get/get.dart';
-
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 class TmdbApp extends StatefulWidget {
 
   const TmdbApp({super.key,});
@@ -29,7 +27,6 @@ class _TmdbAppState extends State<TmdbApp> {
       splitScreenMode: true,
       builder: (context, child) {
         return GetMaterialApp(
-          navigatorKey: navigatorKey,  // Set the navigator key here
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             scaffoldBackgroundColor: AppColors.scaffoldBgColor,
