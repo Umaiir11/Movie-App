@@ -34,7 +34,7 @@ class MovieRepo {
   }
   Future<ApiResponse<MovieVideosResponse>> getMovieTrailer(int movieId) async {
     try {
-      String? endPoint = AppUrls.movieTrailer+movieId.toString()+AppUrls.apikey;
+      String endPoint = "${AppUrls.movieTrailer}$movieId/videos${AppUrls.apikey}";
       final response = await HttpsCalls().getApiHits(endPoint);
       return await ApiResponseHandler.process(response, endPoint, (dataJson) => MovieVideosResponse.fromJson(dataJson));
     } catch (e, stackTrace) {

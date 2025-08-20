@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:tmdb_assignment/app/config/padding_extensions.dart';
 import 'package:tmdb_assignment/app/config/sizedbox_extension.dart';
 import 'package:tmdb_assignment/app/customWidgets/custom_cache_image/custom_cached_image.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 import '../../../config/app_colors.dart';
 import '../../../config/app_text_style.dart';
@@ -26,7 +27,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
   @override
   void initState() {
     super.initState();
-    movieId = Get.arguments;
+    movieId = Get.arguments is int ? Get.arguments : Get.arguments?.id;
     _movieDetailsController.fetchMovieDetails(movieId ?? 0);
   }
 
@@ -36,10 +37,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
       backgroundColor: AppColors.white,
       body: Obx(() {
         if (_movieDetailsController.isMovieDetailsLoading.value) {
-          return  Center(child: CupertinoActivityIndicator(
-            color: Colors.black,
-            radius: 15.sp,
-          ));
+          return const Center(child: CircularProgressIndicator());
         }
         final movie = _movieDetailsController.movieDetails.value;
         if (movie == null) {
@@ -48,11 +46,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeroSection(movie),
-              _buildGenreSection(movie),
-              _buildOverviewSection(movie),
-            ],
+            children: [_buildHeroSection(movie), _buildGenreSection(movie), _buildOverviewSection(movie)],
           ),
         );
       }),
@@ -71,7 +65,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
             imageUrl: movie.backdropFullUrl,
             borderRadius: 0.sp,
 
-              fit: BoxFit.cover,
+            fit: BoxFit.cover,
           ).animate().fadeIn(duration: 800.ms).scale(begin: const Offset(1.1, 1.1), end: const Offset(1.0, 1.0)),
           Container(
             decoration: BoxDecoration(
@@ -83,10 +77,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: _buildActionButtons(movie),
-          ).paddingBottom(20.h),
+          Align(alignment: Alignment.bottomCenter, child: _buildActionButtons(movie)).paddingBottom(20.h),
           Positioned(
             top: MediaQuery.of(context).padding.top + 10.h,
             left: 16.w,
@@ -95,10 +86,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                GestureDetector(
-                  onTap: () => Get.back(),
-                  child: _circleButton(Icons.arrow_back_ios_new_rounded),
-                ),
+                GestureDetector(onTap: () => Get.back(), child: _circleButton(Icons.arrow_back_ios_new_rounded)),
                 10.w.width,
                 Text(
                   movie.title ?? 'Watch',
@@ -163,7 +151,16 @@ class _MovieDetailViewState extends State<MovieDetailView> {
                 width: 250.w,
                 height: 50.h,
                 child: OutlinedButton.icon(
-                  onPressed: () {},
+                  onPressed: () async {
+                    Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
+                    await _movieDetailsController.fetchMovieTrailer(movieId ?? 0);
+                    Get.back(); // Close the loader
+                    if (_movieDetailsController.yTLink?.isNotEmpty ?? true) {
+                      Get.to(() => _VideoPlayerScreen(youtubeUrl: _movieDetailsController.yTLink ?? ""));
+                    } else {
+                      Get.snackbar('Error', 'No trailer available');
+                    }
+                  },
                   icon: Icon(Icons.play_arrow, color: AppColors.white, size: 20.sp),
                   label: Text(
                     'Watch Trailer',
@@ -197,11 +194,12 @@ class _MovieDetailViewState extends State<MovieDetailView> {
           Wrap(
             spacing: 8.w,
             runSpacing: 8.h,
-            children: movie.genres?.asMap().entries.map((entry) {
-              final index = entry.key;
-              final genre = entry.value;
-              return _buildGenreChip(genre.name ?? 'Unknown', _getGenreColor(index), index);
-            }).toList() ??
+            children:
+                movie.genres?.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final genre = entry.value;
+                  return _buildGenreChip(genre.name ?? 'Unknown', _getGenreColor(index), index);
+                }).toList() ??
                 [],
           ),
         ],
@@ -210,14 +208,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
   }
 
   Color _getGenreColor(int index) {
-    final colors = [
-      Colors.teal,
-      Colors.pinkAccent,
-      Colors.deepPurple,
-      CupertinoColors.systemYellow,
-      Colors.blue,
-      Colors.orange,
-    ];
+    final colors = [Colors.teal, Colors.pinkAccent, Colors.deepPurple, CupertinoColors.systemYellow, Colors.blue, Colors.orange];
     return colors[index % colors.length];
   }
 
@@ -249,6 +240,68 @@ class _MovieDetailViewState extends State<MovieDetailView> {
             style: AppTextStyles.customText14(color: AppColors.textLightBlack.withOpacity(0.5), fontWeight: FontWeight.w400, height: 1.1),
           ).animate().slideY(begin: 0.3, duration: 600.ms).fadeIn(delay: 1300.ms),
           20.h.height,
+        ],
+      ),
+    );
+  }
+}
+
+class _VideoPlayerScreen extends StatefulWidget {
+  final String youtubeUrl;
+
+  const _VideoPlayerScreen({required this.youtubeUrl});
+
+  @override
+  State<_VideoPlayerScreen> createState() => __VideoPlayerScreenState();
+}
+
+class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
+  late YoutubePlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final videoId = YoutubePlayer.convertUrlToId(widget.youtubeUrl) ?? '';
+    _controller = YoutubePlayerController(initialVideoId: videoId, flags: const YoutubePlayerFlags(autoPlay: true, mute: false))
+      ..addListener(() {
+        if (_controller.value.playerState == PlayerState.ended) {
+          Get.back();
+        }
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Center(
+            child: YoutubePlayer(
+              controller: _controller,
+              showVideoProgressIndicator: true,
+              progressIndicatorColor: Colors.lightBlue,
+              progressColors: const ProgressBarColors(playedColor: Colors.lightBlue, handleColor: Colors.lightBlueAccent),
+            ),
+          ),
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 10.h,
+            left: 16.w,
+            child: ElevatedButton(
+              onPressed: () => Get.back(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black.withOpacity(0.7),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.sp)),
+              ),
+              child: Text('Done', style: AppTextStyles.customText16(color: Colors.white)),
+            ),
+          ),
         ],
       ),
     );
