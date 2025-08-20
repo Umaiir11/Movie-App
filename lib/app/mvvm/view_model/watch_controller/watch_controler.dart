@@ -12,7 +12,7 @@ class WatchController extends GetxController {
 
   RxList<Movie> upcomingMovies = <Movie>[].obs;
 
-  Future<void> fetchAllCarsAgainstDrivers() async {
+  Future<void> fetchUpcomingMovies() async {
     try {
       isUpcomingMoviesLoading.value = true;
       upcomingMovies.clear();

@@ -19,7 +19,8 @@ class WatchView extends StatefulWidget {
 }
 
 class _WatchViewState extends State<WatchView> {
-  final WatchController controller = Get.find();
+  final WatchController _watchController = Get.find();
+
 
   List<String> imagesList = [
     "https://images.pexels.com/photos/2752776/pexels-photo-2752776.jpeg",
@@ -44,6 +45,13 @@ class _WatchViewState extends State<WatchView> {
   List<String> assetTitles = ["Comedies", "Crime", "Family", "Documentaries", "Dramas", "Fantasy", "Holidays", "Horror", "Sci-Fi", "Thriller"];
 
   @override
+  void initState() {
+    // TODO: implement initState
+    _watchController.fetchUpcomingMovies();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF2F2F6),
@@ -56,13 +64,13 @@ class _WatchViewState extends State<WatchView> {
               border: Border(bottom: BorderSide(color: Color(0xffEFEFEF))),
             ),
             child: Obx(() {
-              return controller.isSearched.value
+              return _watchController.isSearched.value
                   ? Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         GestureDetector(
                           onTap: () {
-                            controller.isSearched.value = false;
+                            _watchController.isSearched.value = false;
                           },
                           child: Icon(Icons.arrow_back_ios_new_rounded, size: 25.sp, color: Colors.black),
                         ),
@@ -76,18 +84,18 @@ class _WatchViewState extends State<WatchView> {
                   : Obx(() {
                       return AnimatedSwitcher(
                         duration: const Duration(milliseconds: 350),
-                        child: controller.isSearching.value
+                        child: _watchController.isSearching.value
                             ? TextField(
                                     key: const ValueKey("searchField"),
                                     autofocus: true,
                                     onSubmitted: (val) {
-                                      controller.isSearched.value = true;
-                                      controller.isSearching.value = false;
+                                      _watchController.isSearched.value = true;
+                                      _watchController.isSearching.value = false;
                                     },
                                     style: AppTextStyles.customText16(color: Colors.black),
                                     decoration: InputDecoration(
                                       suffixIcon: GestureDetector(
-                                        onTap: () => controller.isSearching.value = false,
+                                        onTap: () => _watchController.isSearching.value = false,
                                         child: Icon(Icons.close, color: Colors.black, size: 25.sp),
                                       ),
                                       prefixIcon: Icon(Icons.search, color: Colors.black, size: 25.sp),
@@ -125,7 +133,7 @@ class _WatchViewState extends State<WatchView> {
                                         style: AppTextStyles.customText18(color: Colors.black, fontWeight: FontWeight.w500),
                                       ),
                                       GestureDetector(
-                                        onTap: () => controller.isSearching.value = true,
+                                        onTap: () => _watchController.isSearching.value = true,
                                         child: Icon(Icons.search, color: Colors.black, size: 25.sp),
                                       ),
                                     ],
@@ -142,7 +150,7 @@ class _WatchViewState extends State<WatchView> {
           ),
           20.h.height,
           Obx(() {
-            return controller.isSearched.value
+            return _watchController.isSearched.value
                 ? Expanded(
                     child: ListView.builder(
                       itemCount: imagesList.length,
@@ -166,7 +174,7 @@ class _WatchViewState extends State<WatchView> {
                     ).paddingHorizontal(15.w),
                   )
                 : Obx(() {
-                    return controller.isSearching.value
+                    return _watchController.isSearching.value
                         ? Expanded(
                             child: GridView.builder(
                               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
