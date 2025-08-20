@@ -22,8 +22,7 @@ class WatchController extends GetxController {
 
       LoggerService.i(' All upComing Movies  fetched: ${upcomingMovies.length}');
     } catch (e, stack) {
-      LoggerService.e(' allDrivers API error', error: e, stackTrace: stack);
-    } finally {
+      LoggerService.e('  API error', error: e, stackTrace: stack);    } finally {
       isUpcomingMoviesLoading.value = false;
     }
   }

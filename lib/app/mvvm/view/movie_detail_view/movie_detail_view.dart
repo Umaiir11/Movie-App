@@ -9,6 +9,8 @@ import 'package:tmdb_assignment/app/customWidgets/custom_cache_image/custom_cach
 
 import '../../../config/app_colors.dart';
 import '../../../config/app_text_style.dart';
+import '../../model/api_response_model/movie_details_respmodel.dart';
+import '../../view_model/movie_details_controller.dart';
 
 class MovieDetailView extends StatefulWidget {
   const MovieDetailView({super.key});
@@ -18,17 +20,46 @@ class MovieDetailView extends StatefulWidget {
 }
 
 class _MovieDetailViewState extends State<MovieDetailView> {
+  final MovieDetailsController _movieDetailsController = Get.find();
+  int? movieId;
+
+  @override
+  void initState() {
+    super.initState();
+    movieId = Get.arguments;
+    _movieDetailsController.fetchMovieDetails(movieId ?? 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      body: SingleChildScrollView(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_buildHeroSection(), _buildGenreSection(), _buildOverviewSection()]),
-      ),
+      body: Obx(() {
+        if (_movieDetailsController.isMovieDetailsLoading.value) {
+          return  Center(child: CupertinoActivityIndicator(
+            color: Colors.black,
+            radius: 15.sp,
+          ));
+        }
+        final movie = _movieDetailsController.movieDetails.value;
+        if (movie == null) {
+          return const Center(child: Text('No movie details available'));
+        }
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeroSection(movie),
+              _buildGenreSection(movie),
+              _buildOverviewSection(movie),
+            ],
+          ),
+        );
+      }),
     );
   }
 
-  Widget _buildHeroSection() {
+  Widget _buildHeroSection(MovieDetails movie) {
     return Container(
       height: 0.6.sh,
       width: double.infinity,
@@ -37,11 +68,11 @@ class _MovieDetailViewState extends State<MovieDetailView> {
           CustomCachedImage(
             height: 0.6.sh,
             width: double.infinity,
-            imageUrl: 'https://images.pexels.com/photos/5852135/pexels-photo-5852135.jpeg',
+            imageUrl: movie.backdropFullUrl,
             borderRadius: 0.sp,
-          ).animate().fadeIn(duration: 800.ms).scale(begin: const Offset(1.1, 1.1), end: const Offset(1.0, 1.0)),
 
-          // Gradient Overlay
+              fit: BoxFit.cover,
+          ).animate().fadeIn(duration: 800.ms).scale(begin: const Offset(1.1, 1.1), end: const Offset(1.0, 1.0)),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -52,8 +83,10 @@ class _MovieDetailViewState extends State<MovieDetailView> {
               ),
             ),
           ),
-          Align(alignment: Alignment.bottomCenter, child: _buildActionButtons()).paddingBottom(20.h),
-          // Top Navigation
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: _buildActionButtons(movie),
+          ).paddingBottom(20.h),
           Positioned(
             top: MediaQuery.of(context).padding.top + 10.h,
             left: 16.w,
@@ -62,10 +95,13 @@ class _MovieDetailViewState extends State<MovieDetailView> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                GestureDetector(onTap: () => Get.back(), child: _circleButton(Icons.arrow_back_ios_new_rounded)),
+                GestureDetector(
+                  onTap: () => Get.back(),
+                  child: _circleButton(Icons.arrow_back_ios_new_rounded),
+                ),
                 10.w.width,
                 Text(
-                  'Watch',
+                  movie.title ?? 'Watch',
                   style: AppTextStyles.customText18(color: Colors.white, fontWeight: FontWeight.w500),
                 ),
               ],
@@ -84,7 +120,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(MovieDetails movie) {
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: Column(
@@ -93,7 +129,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'In Theaters December 22, 2021',
+            'In Theaters ${movie.releaseDate ?? 'Unknown Date'}',
             style: AppTextStyles.customText18(color: Colors.white, fontWeight: FontWeight.w500),
           ),
           10.h.height,
@@ -119,10 +155,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
               ).animate().slideY(begin: 0.5, duration: 600.ms).fadeIn(delay: 600.ms).scale(begin: const Offset(0.9, 0.9)),
             ],
           ),
-
           12.h.height,
-
-          // Watch Trailer Button
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -149,7 +182,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
     );
   }
 
-  Widget _buildGenreSection() {
+  Widget _buildGenreSection(MovieDetails movie) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 16.w),
       child: Column(
@@ -160,23 +193,32 @@ class _MovieDetailViewState extends State<MovieDetailView> {
             'Genres',
             style: AppTextStyles.customText18(color: AppColors.black, fontWeight: FontWeight.w500),
           ).animate().slideX(begin: -0.3, duration: 500.ms).fadeIn(delay: 800.ms),
-
           12.h.height,
-
-          Row(
-            children: [
-              _buildGenreChip('Action', Colors.teal, 0),
-              8.w.width,
-              _buildGenreChip('Thriller', Colors.pinkAccent, 1),
-              8.w.width,
-              _buildGenreChip('Science', Colors.deepPurple, 2),
-              8.w.width,
-              _buildGenreChip('Fiction', CupertinoColors.systemYellow, 3),
-            ],
+          Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
+            children: movie.genres?.asMap().entries.map((entry) {
+              final index = entry.key;
+              final genre = entry.value;
+              return _buildGenreChip(genre.name ?? 'Unknown', _getGenreColor(index), index);
+            }).toList() ??
+                [],
           ),
         ],
       ),
     );
+  }
+
+  Color _getGenreColor(int index) {
+    final colors = [
+      Colors.teal,
+      Colors.pinkAccent,
+      Colors.deepPurple,
+      CupertinoColors.systemYellow,
+      Colors.blue,
+      Colors.orange,
+    ];
+    return colors[index % colors.length];
   }
 
   Widget _buildGenreChip(String text, Color color, int index) {
@@ -190,7 +232,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
     ).animate().slideY(begin: 0.3, duration: 400.ms).fadeIn(delay: Duration(milliseconds: 900 + (index * 100))).scale(begin: const Offset(0.8, 0.8));
   }
 
-  Widget _buildOverviewSection() {
+  Widget _buildOverviewSection(MovieDetails movie) {
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: Column(
@@ -201,14 +243,11 @@ class _MovieDetailViewState extends State<MovieDetailView> {
             'Overview',
             style: AppTextStyles.customText18(color: AppColors.black, fontWeight: FontWeight.w500),
           ).animate().slideX(begin: -0.3, duration: 500.ms).fadeIn(delay: 1200.ms),
-
           12.h.height,
-
           Text(
-            'As A Collection Of History\'s Worst Tyrants And Criminal Masterminds Gather To Plot A War To Wipe Out Millions, One Man Must Race Against Time To Stop Them. Discover The Origins Of The Very First Independent Intelligence Agency In The King\'s Man. The Comic Book Secret Service By Mark Millar And Dave Gibbons.',
+            movie.overview ?? 'No overview available',
             style: AppTextStyles.customText14(color: AppColors.textLightBlack.withOpacity(0.5), fontWeight: FontWeight.w400, height: 1.1),
           ).animate().slideY(begin: 0.3, duration: 600.ms).fadeIn(delay: 1300.ms),
-
           20.h.height,
         ],
       ),

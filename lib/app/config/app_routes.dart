@@ -5,6 +5,7 @@ import 'package:tmdb_assignment/app/mvvm/view_model/bottom_bar_controller/bottom
 import 'package:tmdb_assignment/app/mvvm/view_model/watch_controller/watch_controler.dart';
 
 import '../mvvm/view/splash_view/splash_view.dart';
+import '../mvvm/view_model/movie_details_controller.dart';
 
 /// Defines navigation routes for the LayerX app.
 abstract class AppRoutes {
@@ -30,7 +31,7 @@ abstract class AppPages {
       name: AppRoutes.movieDetailView,
       page: () => MovieDetailView(),
       binding: BindingsBuilder(() {
-        // Get.lazyPut<SplashController>(() => SplashController());
+        Get.lazyPut<MovieDetailsController>(() => MovieDetailsController());
       }),
     ),
     GetPage(

@@ -22,9 +22,9 @@ class MovieRepo {
   }
 
 
-  Future<ApiResponse<MovieDetails>> getMovieDetails() async {
+  Future<ApiResponse<MovieDetails>> getMovieDetails(int movieId) async {
     try {
-      String? endPoint = AppUrls.movieDetails;
+      String? endPoint = AppUrls.movieDetails+movieId.toString()+AppUrls.apikey;
       final response = await HttpsCalls().getApiHits(endPoint);
       return await ApiResponseHandler.process(response, endPoint, (dataJson) => MovieDetails.fromJson(dataJson));
     } catch (e, stackTrace) {
@@ -32,9 +32,9 @@ class MovieRepo {
       rethrow;
     }
   }
-  Future<ApiResponse<MovieVideosResponse>> getMovieTrailer() async {
+  Future<ApiResponse<MovieVideosResponse>> getMovieTrailer(int movieId) async {
     try {
-      String? endPoint = AppUrls.movieTrailer;
+      String? endPoint = AppUrls.movieTrailer+movieId.toString()+AppUrls.apikey;
       final response = await HttpsCalls().getApiHits(endPoint);
       return await ApiResponseHandler.process(response, endPoint, (dataJson) => MovieVideosResponse.fromJson(dataJson));
     } catch (e, stackTrace) {
@@ -42,9 +42,9 @@ class MovieRepo {
       rethrow;
     }
   }
-  Future<ApiResponse<MovieImagesResponseModel>> getMovieTImages() async {
+  Future<ApiResponse<MovieImagesResponseModel>> getMovieTImages(int movieId) async {
     try {
-      String? endPoint = AppUrls.movieImages;
+      String? endPoint = AppUrls.movieImages+movieId.toString()+AppUrls.apikey;
       final response = await HttpsCalls().getApiHits(endPoint);
       return await ApiResponseHandler.process(response, endPoint, (dataJson) => MovieImagesResponseModel.fromJson(dataJson));
     } catch (e, stackTrace) {

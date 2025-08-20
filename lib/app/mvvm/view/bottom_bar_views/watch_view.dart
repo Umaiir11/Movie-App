@@ -208,7 +208,11 @@ class _WatchViewState extends State<WatchView> {
                         : Expanded(
                       child: Obx(() {
                         return _watchController.isUpcomingMoviesLoading.value
-                            ? const Center(child: CupertinoActivityIndicator())
+                            ?  Center(child: CupertinoActivityIndicator(
+                          color: Colors.black,
+                          radius: 15.sp,
+
+                        ))
                             : ListView.builder(
                           itemCount: _watchController.upcomingMovies.length,
                           padding: EdgeInsets.zero,
@@ -219,8 +223,12 @@ class _WatchViewState extends State<WatchView> {
                               imgPath: movie.posterFullUrl,
                               title: movie.title ?? 'Unknown Title',
                               onTap: () {
-                                Get.toNamed(AppRoutes.movieDetailView, arguments: movie);
+                                Get.toNamed(
+                                  AppRoutes.movieDetailView,
+                                  arguments: movie.id,
+                                );
                               },
+
                             )
                                 .paddingBottom(12.h)
                                 .animate(delay: (100 * index).ms)
