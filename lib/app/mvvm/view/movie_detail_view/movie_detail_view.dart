@@ -46,7 +46,11 @@ class _MovieDetailViewState extends State<MovieDetailView> {
         return SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [_buildHeroSection(movie), _buildGenreSection(movie), _buildOverviewSection(movie)],
+            children: [
+              _buildHeroSection(movie),
+              _buildGenreSection(movie),
+              _buildOverviewSection(movie),
+            ],
           ),
         );
       }),
@@ -64,9 +68,9 @@ class _MovieDetailViewState extends State<MovieDetailView> {
             width: double.infinity,
             imageUrl: movie.backdropFullUrl,
             borderRadius: 0.sp,
-
             fit: BoxFit.cover,
-          ).animate().fadeIn(duration: 800.ms).scale(begin: const Offset(1.1, 1.1), end: const Offset(1.0, 1.0)),
+
+                         ).animate().fadeIn(duration: 800.ms).scale(begin: const Offset(1.1, 1.1), end: const Offset(1.0, 1.0)),
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -77,7 +81,10 @@ class _MovieDetailViewState extends State<MovieDetailView> {
               ),
             ),
           ),
-          Align(alignment: Alignment.bottomCenter, child: _buildActionButtons(movie)).paddingBottom(20.h),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: _buildActionButtons(movie),
+          ).paddingBottom(20.h),
           Positioned(
             top: MediaQuery.of(context).padding.top + 10.h,
             left: 16.w,
@@ -86,7 +93,10 @@ class _MovieDetailViewState extends State<MovieDetailView> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                GestureDetector(onTap: () => Get.back(), child: _circleButton(Icons.arrow_back_ios_new_rounded)),
+                GestureDetector(
+                  onTap: () => Get.back(),
+                  child: _circleButton(Icons.arrow_back_ios_new_rounded),
+                ),
                 10.w.width,
                 Text(
                   movie.title ?? 'Watch',
@@ -152,13 +162,27 @@ class _MovieDetailViewState extends State<MovieDetailView> {
                 height: 50.h,
                 child: OutlinedButton.icon(
                   onPressed: () async {
-                    Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
-                    await _movieDetailsController.fetchMovieTrailer(movieId ?? 0);
-                    Get.back(); // Close the loader
-                    if (_movieDetailsController.yTLink?.isNotEmpty ?? true) {
-                      Get.to(() => _VideoPlayerScreen(youtubeUrl: _movieDetailsController.yTLink ?? ""));
-                    } else {
-                      Get.snackbar('Error', 'No trailer available');
+                    Get.dialog(
+                      Dialog(
+                        backgroundColor: Colors.black54,
+                        child: Padding(
+                          padding: EdgeInsets.all(20.w),
+                          child: const CircularProgressIndicator(),
+                        ),
+                      ),
+                      barrierDismissible: false,
+                    );
+                    try {
+                      await _movieDetailsController.fetchMovieTrailer(movieId ?? 0);
+                      Get.back(); // Close the loader
+                      if (_movieDetailsController.yTLink?.isNotEmpty ?? false) {
+                        Get.to(() => _VideoPlayerScreen(youtubeUrl: _movieDetailsController.yTLink?? ""));
+                      } else {
+                        Get.snackbar('Error', 'No trailer available', snackPosition: SnackPosition.BOTTOM);
+                      }
+                    } catch (e) {
+                      Get.back(); // Close the loader on error
+                      Get.snackbar('Error', 'Failed to load trailer: $e', snackPosition: SnackPosition.BOTTOM);
                     }
                   },
                   icon: Icon(Icons.play_arrow, color: AppColors.white, size: 20.sp),
@@ -194,12 +218,11 @@ class _MovieDetailViewState extends State<MovieDetailView> {
           Wrap(
             spacing: 8.w,
             runSpacing: 8.h,
-            children:
-                movie.genres?.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final genre = entry.value;
-                  return _buildGenreChip(genre.name ?? 'Unknown', _getGenreColor(index), index);
-                }).toList() ??
+            children: movie.genres?.asMap().entries.map((entry) {
+              final index = entry.key;
+              final genre = entry.value;
+              return _buildGenreChip(genre.name ?? 'Unknown', _getGenreColor(index), index);
+            }).toList() ??
                 [],
           ),
         ],
@@ -208,7 +231,14 @@ class _MovieDetailViewState extends State<MovieDetailView> {
   }
 
   Color _getGenreColor(int index) {
-    final colors = [Colors.teal, Colors.pinkAccent, Colors.deepPurple, CupertinoColors.systemYellow, Colors.blue, Colors.orange];
+    final colors = [
+      Colors.teal,
+      Colors.pinkAccent,
+      Colors.deepPurple,
+      CupertinoColors.systemYellow,
+      Colors.blue,
+      Colors.orange,
+    ];
     return colors[index % colors.length];
   }
 
@@ -262,12 +292,19 @@ class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
   void initState() {
     super.initState();
     final videoId = YoutubePlayer.convertUrlToId(widget.youtubeUrl) ?? '';
-    _controller = YoutubePlayerController(initialVideoId: videoId, flags: const YoutubePlayerFlags(autoPlay: true, mute: false))
-      ..addListener(() {
-        if (_controller.value.playerState == PlayerState.ended) {
-          Get.back();
-        }
-      });
+    _controller = YoutubePlayerController(
+      initialVideoId: videoId,
+      flags: const YoutubePlayerFlags(
+        autoPlay: true,
+        mute: false,
+        enableCaption: true,
+        captionLanguage: 'en',
+      ),
+    )..addListener(() {
+      if (_controller.value.playerState == PlayerState.ended) {
+        Get.back();
+      }
+    });
   }
 
   @override
@@ -287,7 +324,13 @@ class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
               controller: _controller,
               showVideoProgressIndicator: true,
               progressIndicatorColor: Colors.lightBlue,
-              progressColors: const ProgressBarColors(playedColor: Colors.lightBlue, handleColor: Colors.lightBlueAccent),
+              progressColors: const ProgressBarColors(
+                playedColor: Colors.lightBlue,
+                handleColor: Colors.lightBlueAccent,
+              ),
+              onReady: () {
+                _controller.play();
+              },
             ),
           ),
           Positioned(
@@ -299,7 +342,10 @@ class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
                 backgroundColor: Colors.black.withOpacity(0.7),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.sp)),
               ),
-              child: Text('Done', style: AppTextStyles.customText16(color: Colors.white)),
+              child: Text(
+                'Done',
+                style: AppTextStyles.customText16(color: Colors.white),
+              ),
             ),
           ),
         ],
