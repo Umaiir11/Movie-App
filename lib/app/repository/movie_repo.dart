@@ -22,6 +22,7 @@ class MovieRepo {
   }
 
 
+
   Future<ApiResponse<MovieDetails>> getMovieDetails(int movieId) async {
     try {
       String? endPoint = AppUrls.movieDetails+movieId.toString()+AppUrls.apikey;
