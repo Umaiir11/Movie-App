@@ -306,7 +306,6 @@ class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
       }
     });
 
-    // ✅ Force fullscreen as soon as screen opens
     Future.delayed(const Duration(milliseconds: 100), () {
       _controller.toggleFullScreenMode();
     });
@@ -337,14 +336,13 @@ class __VideoPlayerScreenState extends State<_VideoPlayerScreen> {
             children: [
               Center(child: player),
 
-              // ✅ Custom Done button (works in both normal + fullscreen)
               Positioned(
                 top: MediaQuery.of(context).padding.top + 10,
                 left: 16,
                 child: ElevatedButton(
                   onPressed: () {
                     if (_controller.value.isFullScreen) {
-                      _controller.toggleFullScreenMode(); // exit fullscreen first
+                      _controller.toggleFullScreenMode();
                     }
                     Get.back(); // then close screen
                   },

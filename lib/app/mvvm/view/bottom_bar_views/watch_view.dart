@@ -22,7 +22,6 @@ class WatchView extends StatefulWidget {
 class _WatchViewState extends State<WatchView> {
   final WatchController _watchController = Get.find();
 
-
   List<String> imagesList = [
     "https://images.pexels.com/photos/2752776/pexels-photo-2752776.jpeg",
     "https://images.pexels.com/photos/5852135/pexels-photo-5852135.jpeg",
@@ -206,43 +205,38 @@ class _WatchViewState extends State<WatchView> {
                             ).paddingHorizontal(15.w),
                           )
                         : Expanded(
-                      child: Obx(() {
-                        return _watchController.isUpcomingMoviesLoading.value
-                            ?  Center(child: CupertinoActivityIndicator(
-                          color: Colors.black,
-                          radius: 15.sp,
-
-                        ))
-                            : ListView.builder(
-                          itemCount: _watchController.upcomingMovies.length,
-                          padding: EdgeInsets.zero,
-                          physics: const BouncingScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            final movie = _watchController.upcomingMovies[index];
-                            return _buildWatchTile(
-                              imgPath: movie.posterFullUrl,
-                              title: movie.title ?? 'Unknown Title',
-                              onTap: () {
-                                Get.toNamed(
-                                  AppRoutes.movieDetailView,
-                                  arguments: movie.id,
-                                );
-                              },
-
-                            )
-                                .paddingBottom(12.h)
-                                .animate(delay: (100 * index).ms)
-                                .fadeIn(duration: 500.ms, curve: Curves.easeOut)
-                                .slideY(begin: 0.2, end: 0, duration: 500.ms, curve: Curves.easeOut)
-                                .scale(
-                                begin: const Offset(0.95, 0.95),
-                                end: const Offset(1, 1),
-                                duration: 500.ms,
-                                curve: Curves.easeOut);
-                          },
-                        ).paddingHorizontal(15.w);
-                      }),
-                    );
+                            child: Obx(() {
+                              return _watchController.isUpcomingMoviesLoading.value
+                                  ? Center(
+                                      child: CupertinoActivityIndicator(color: Colors.black, radius: 15.sp),
+                                    )
+                                  : ListView.builder(
+                                      itemCount: _watchController.upcomingMovies.length,
+                                      padding: EdgeInsets.zero,
+                                      physics: const BouncingScrollPhysics(),
+                                      itemBuilder: (context, index) {
+                                        final movie = _watchController.upcomingMovies[index];
+                                        return _buildWatchTile(
+                                              imgPath: movie.posterFullUrl,
+                                              title: movie.title ?? 'Unknown Title',
+                                              onTap: () {
+                                                Get.toNamed(AppRoutes.movieDetailView, arguments: movie.id);
+                                              },
+                                            )
+                                            .paddingBottom(12.h)
+                                            .animate(delay: (40 * index).ms, onPlay: (controller) => controller.forward())
+                                            .slideY(begin: 0.4, end: 0, duration: 200.ms, curve: Curves.easeOutBack)
+                                            .scale(
+                                              begin: const Offset(0.85, 0.85),
+                                              end: const Offset(1, 1),
+                                              duration: 200.ms,
+                                              curve: Curves.bounceOut,
+                                            )
+                                            .rotate(begin: 0.08, end: 0, duration: 200.ms, curve: Curves.easeOutBack);
+                                      },
+                                    ).paddingHorizontal(15.w);
+                            }),
+                          );
                   });
           }),
         ],
