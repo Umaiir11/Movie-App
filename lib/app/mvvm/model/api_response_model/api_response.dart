@@ -1,4 +1,3 @@
-/// Generic API response model for flexible data parsing.
 class ApiResponse<T> {
   final bool? success;
   final String? message;
@@ -15,27 +14,28 @@ class ApiResponse<T> {
   });
 
   factory ApiResponse.fromJson(
-    Map<String, dynamic> json,
-    T Function(dynamic json) fromJsonT,
-  ) {
+      Map<String, dynamic>? json,
+      T Function(dynamic json)? fromJsonT,
+      ) {
+    if (json == null) {
+      return ApiResponse();
+    }
+
+    // Determine success status
     final status = json['status'];
     final success = json['success'];
     final isSuccess = success == true || status == 'success';
 
-    final skipKeys = {'status', 'success', 'code', 'error', 'message', 'token'};
-    dynamic extractedData;
+    // By default, use the entire JSON as the data source
+    dynamic extractedData = json;
 
-    // First try 'data' if it exists
-    if (json['data'] != null) {
-      extractedData = json['data'];
-    } else {
-      // Otherwise try to find any nested Map or List not part of skipKeys
-      for (final entry in json.entries) {
-        if (!skipKeys.contains(entry.key) &&
-            (entry.value is Map<String, dynamic> || entry.value is List)) {
-          extractedData = entry.value;
-          break;
-        }
+    // Parse the extracted data using fromJsonT
+    T? parsedData;
+    if (extractedData != null && fromJsonT != null) {
+      try {
+        parsedData = fromJsonT(extractedData);
+      } catch (e) {
+        print('Error parsing data with fromJsonT: $e');
       }
     }
 
@@ -43,17 +43,17 @@ class ApiResponse<T> {
       success: isSuccess,
       message: json['message'] as String?,
       code: json['code'] as int?,
-      data: extractedData != null ? fromJsonT(extractedData) : null,
+      data: parsedData,
       token: json['token'] as String?,
     );
   }
 
-  Map<String, dynamic> toJson(Map<String, dynamic> Function(T) toJsonT) {
+  Map<String, dynamic> toJson(Map<String, dynamic> Function(T)? toJsonT) {
     return {
       'success': success,
       'message': message,
       'code': code,
-      'data': data != null ? toJsonT(data as T) : null,
+      'data': (data != null && toJsonT != null) ? toJsonT(data as T) : null,
       'token': token,
     };
   }
