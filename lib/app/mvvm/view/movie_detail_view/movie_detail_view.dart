@@ -37,7 +37,7 @@ class _MovieDetailViewState extends State<MovieDetailView> {
       backgroundColor: AppColors.white,
       body: Obx(() {
         if (_movieDetailsController.isMovieDetailsLoading.value) {
-          return const Center(child: CircularProgressIndicator());
+          return  Center(child:  CupertinoActivityIndicator(color: Colors.black, radius: 15.sp),);
         }
         final movie = _movieDetailsController.movieDetails.value;
         if (movie == null) {
@@ -165,23 +165,20 @@ class _MovieDetailViewState extends State<MovieDetailView> {
                     Get.dialog(
                       Dialog(
                         backgroundColor: Colors.black54,
-                        child: Padding(
-                          padding: EdgeInsets.all(20.w),
-                          child: const CircularProgressIndicator(),
-                        ),
+                        child:   CupertinoActivityIndicator(color: Colors.white, radius: 15.sp),
                       ),
                       barrierDismissible: false,
                     );
                     try {
                       await _movieDetailsController.fetchMovieTrailer(movieId ?? 0);
-                      Get.back(); // Close the loader
+                      Get.back();
                       if (_movieDetailsController.yTLink?.isNotEmpty ?? false) {
                         Get.to(() => _VideoPlayerScreen(youtubeUrl: _movieDetailsController.yTLink?? ""));
                       } else {
                         Get.snackbar('Error', 'No trailer available', snackPosition: SnackPosition.BOTTOM);
                       }
                     } catch (e) {
-                      Get.back(); // Close the loader on error
+                      Get.back();
                       Get.snackbar('Error', 'Failed to load trailer: $e', snackPosition: SnackPosition.BOTTOM);
                     }
                   },
