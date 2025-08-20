@@ -41,19 +41,7 @@ class TheaterScreen extends StatelessWidget {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  20.h.verticalSpace,
-                  _buildScreen(controller),
-                  30.h.verticalSpace,
-                  _buildSeatsArea(controller),
-                  30.h.verticalSpace,
-                  _buildLegend(),
-                  20.h.verticalSpace,
-                  _buildSelectedSeatsInfo(controller),
-                  20.h.verticalSpace,
-                ],
-              ),
+              child: Column(children: [20.h.verticalSpace, _buildScreen(controller), 30.h.verticalSpace, _buildSeatsArea(controller), 20.h.verticalSpace]),
             ),
           ),
           _buildBottomSection(controller),
@@ -102,29 +90,28 @@ class TheaterScreen extends StatelessWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Obx(
-              () =>
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: List.generate(controller.numOfRows.value, (rowIdx) {
-                  String rowLetter = String.fromCharCode(65 + rowIdx);
-                  return Padding(
-                    padding: EdgeInsets.symmetric(vertical: 4.h),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _rowLabel(rowLetter),
-                        8.w.horizontalSpace,
-                        ...List.generate(controller.seatsPerRow.value, (seatIdx) {
-                          String seatName = "$rowLetter${seatIdx + 1}";
-                          return _buildSeat(controller, seatName);
-                        }),
-                        8.w.horizontalSpace,
-                        _rowLabel(rowLetter),
-                      ],
-                    ),
-                  );
-                }),
-              ),
+          () => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(controller.numOfRows.value, (rowIdx) {
+              String rowLetter = String.fromCharCode(65 + rowIdx);
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 4.h),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _rowLabel(rowLetter),
+                    8.w.horizontalSpace,
+                    ...List.generate(controller.seatsPerRow.value, (seatIdx) {
+                      String seatName = "$rowLetter${seatIdx + 1}";
+                      return _buildSeat(controller, seatName);
+                    }),
+                    8.w.horizontalSpace,
+                    _rowLabel(rowLetter),
+                  ],
+                ),
+              );
+            }),
+          ),
         ),
       ),
     );
@@ -188,13 +175,17 @@ class TheaterScreen extends StatelessWidget {
   Widget _buildLegend() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Column(
         children: [
-          _legendItem(Colors.orange, "Selected"),
-          _legendItem(Colors.grey[400]!, "Not available"),
-          _legendItem(Colors.grey[600]!, "VIP (150₹)"),
-          _legendItem(Colors.lightBlue[100]!, "Regular (50₹)"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [_legendItem(Color(0xffCD9D0F), "Selected"), 40.w.width, _legendItem(Colors.grey[400]!, "Not available")],
+          ),
+          10.h.height,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [_legendItem(Color(0xff564CA3), "VIP (150\$)"), 35.w.width, _legendItem(Colors.lightBlue, "Regular (50\$)")],
+          ),
         ],
       ),
     );
@@ -204,7 +195,7 @@ class TheaterScreen extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset(AppAssets.seatIcon, height: 15.h, color: color,),
+        Image.asset(AppAssets.seatIcon, height: 15.h, color: color),
         6.w.horizontalSpace,
         Text(label, style: AppTextStyles.customText12(color: Colors.grey[600])),
       ],
@@ -217,28 +208,30 @@ class TheaterScreen extends StatelessWidget {
 
       return Container(
         margin: EdgeInsets.symmetric(horizontal: 20.w),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(8.r),
           border: Border.all(color: Colors.grey[300]!),
         ),
-        child: Row(
-          children: [
-            Text(
-              '${controller.selectedSeatNames.length}',
-              style: AppTextStyles.customText16(fontWeight: FontWeight.w600, color: Colors.black),
-            ),
-            4.w.horizontalSpace,
-            Text('/ 3 row', style: AppTextStyles.customText14(color: Colors.grey[600])),
-            Spacer(),
-            GestureDetector(
-              onTap: () {
-                // Clear selection logic if needed
-              },
-              child: Icon(Icons.close, size: 20.sp, color: Colors.grey[600]),
-            ),
-          ],
+        child: Center(
+          child: Row(
+            children: [
+              Text(
+                '${controller.selectedSeatNames.length}',
+                style: AppTextStyles.customText16(fontWeight: FontWeight.w600, color: Colors.black),
+              ),
+              4.w.horizontalSpace,
+              Text('/ 3 row', style: AppTextStyles.customText14(color: Colors.grey[600])),
+              Spacer(),
+              GestureDetector(
+                onTap: () {
+                  // Clear selection logic if needed
+                },
+                child: Icon(Icons.close, size: 20.sp, color: Colors.black),
+              ),
+            ],
+          ),
         ),
       );
     });
@@ -247,48 +240,62 @@ class TheaterScreen extends StatelessWidget {
   Widget _buildBottomSection(TheaterController controller) {
     return Container(
       color: Colors.white,
-      padding: EdgeInsets.all(20.w),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Total Price Row
-          Obx(
-                () =>
-                Row(
-                  children: [
-                    Text('Total Price', style: AppTextStyles.customText14(color: Colors.grey[600])),
-                    Spacer(),
-                    Text(
-                      controller.selectedSeatNames.isNotEmpty ? '\$ ${controller.totalAmount.toStringAsFixed(0)}' : '\$ 0',
-                      style: AppTextStyles.customText20(fontWeight: FontWeight.w600, color: Colors.black),
-                    ),
-                  ],
-                ),
-          ),
-          20.h.verticalSpace,
-          // Proceed Button
-          Obx(
-                () =>
-                SizedBox(
-                  width: double.infinity,
-                  height: 50.h,
-                  child: ElevatedButton(
-                    onPressed: controller.selectedSeatNames.isNotEmpty ? controller.proceedToPayment : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: controller.selectedSeatNames.isNotEmpty ? Colors.lightBlue : Colors.grey[300],
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      'Proceed to pay',
-                      style: AppTextStyles.customText16(
-                        fontWeight: FontWeight.w600,
-                        color: controller.selectedSeatNames.isNotEmpty ? Colors.white : Colors.grey[600],
+          12.h.height,
+          _buildLegend(),
+          12.h.height,
+          _buildSelectedSeatsInfo(controller),
+          13.h.height,
+          Row(
+            children: [
+              Container(
+                height: 45.h,
+                width: 140.w,
+                decoration: BoxDecoration(color: AppColors.textLightBlack.withOpacity(0.2), borderRadius: BorderRadius.circular(14.sp)),
+                child: Obx(
+                  () => Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Total Price', style: AppTextStyles.customText14(color: Colors.grey[600])),
+                      8.w.width,
+                      Text(
+                        controller.selectedSeatNames.isNotEmpty ? '\$ ${controller.totalAmount.toStringAsFixed(0)}' : '\$ 0',
+                        style: AppTextStyles.customText20(fontWeight: FontWeight.w600, color: Colors.black),
                       ),
+                    ],
+                  ),
+                ),
+              ),
+              15.w.width,
+              Expanded(
+                child: Obx(
+                  () => GestureDetector(
+                    onTap: () {
+                      controller.selectedSeatNames.isNotEmpty ? controller.proceedToPayment : null;
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: controller.selectedSeatNames.isNotEmpty ? Colors.lightBlue : Colors.grey[300],
+                        borderRadius: BorderRadius.circular(12.sp),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Proceed To Pay',
+                          style: AppTextStyles.customText16(
+                            color: controller.selectedSeatNames.isNotEmpty ? Colors.white : Colors.grey[600],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ).paddingVertical(15.h),
                     ),
                   ),
                 ),
-          ),
+              ),
+            ],
+          ).paddingHorizontal(15.w).paddingBottom(20.h),
         ],
       ),
     );
